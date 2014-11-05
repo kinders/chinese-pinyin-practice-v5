@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" href="拼音随堂练习v5-离线版/jquery.mobile-1.4.4.min.css">
+  <script src="拼音随堂练习v5-离线版/jquery.min.js"></script>
+  <script src="拼音随堂练习v5-离线版/jquery.mobile-1.4.4.min.js"></script>
+<script>
+$(document).ready(function(){
+  // 全局变量
+  var maxtime=5000; //每个项目测试的时间；测试时超过该时间，该次测试被判定为不合格。
+  var pass_time=2; // 如果每个项目得到这个分数，则通过测试。
+  var timer; //计时变量。
+  var score=0; //初始化分数。
+  // 测试项目
+  var char01="a o e<br> i u ü";
+  var char01_0 = ['a','o', 'e','i','u','ü'];
+  var char01__0 = ['ā', 'á', 'ǎ', 'à', 'ō', 'ó', 'ǒ', 'ò', 'ē', 'é', 'ě', 'è', 'ī', 'í', 'ǐ', 'ì', 'ū','ú','ǔ','ù', 'ǖ', 'ǘ', 'ǚ', 'ǜ'];
+  var char02 = "b  p  m  f";
+  var char02_0 = ['b','p', 'm','f'];
+  var char02_2 = ['bā', 'bō', 'bī', 'bū', 'pā', 'pō','pī', 'pū', 'mā', 'mō', 'mē', 'mī', 'mū', 'fā', 'fō', 'fū', 'bá', 'bó', 'bí', 'bú', 'pá', 'pó','pí', 'pú', 'má', 'mó', 'mé', 'mí', 'mú', 'fá', 'fó', 'fú', 'bǎ', 'bǒ', 'bǐ', 'bǔ', 'pǎ', 'pǒ','pǐ', 'pǔ', 'mǎ', 'mǒ', 'mě', 'mǐ', 'mǔ', 'fǎ', 'fǒ', 'fǔ', 'bà', 'bò', 'bì', 'bù', 'pà', 'pò','pì', 'pù', 'mà', 'mò', 'mè', 'mì', 'mù', 'fà', 'fò', 'fù'];
+  var char03 = "d  t  n  l";
+  var char03_0 = ['d', 't', 'n', 'l'];
+  var char03_1 = ['b &nbsp p', 'b &nbsp d', 'p &nbsp b', 'p &nbsp d', 'd &nbsp b', 'd &nbsp p'];
+  var char03_2 = ['dā', 'dē', 'dī', 'dū', 'tā', 'tē', 'tī', 'tū', 'nā', 'nē', 'nī', 'nū', 'nǖ', 'lā', 'lē', 'lī', 'lū', 'lǖ', 'dá', 'dé', 'dí', 'dú', 'tá', 'té', 'tí', 'tú', 'ná', 'né', 'ní', 'nú', 'nǘ', 'lá', 'lé', 'lí', 'lú', 'lǘ', 'dǎ', 'dě', 'dǐ', 'dǔ', 'tǎ', 'tě', 'tǐ', 'tǔ', 'nǎ', 'ně', 'nǐ', 'nǔ', 'nǚ', 'lǎ', 'lě', 'lǐ', 'lǔ', 'lǚ', 'dà', 'dè', 'dì', 'dù', 'tà', 'tè', 'tì', 'tù', 'nà', 'nè', 'nì', 'nù', 'nǜ', 'là', 'lè', 'lì', 'lǜ', 'lü']; 
+  var char03_3 = ['duō', 'tuō', 'nuō', 'liā', 'luō', 'duó', 'tuó', 'nuó', 'liá', 'luó', 'duǒ', 'tuǒ','nuǒ', 'liǎ', 'luǒ', 'duò', 'tuò','nuò', 'lià', 'luò']
+  var char03_9 = char02_2.concat(char03_2, char03_3);
+  var char04 = "g  k  h";
+  var char04_0 = ['g', 'k', 'h'];
+  var char04_1 = ['g &nbsp d', 'b &nbsp g', 'd &nbsp g', 'g &nbsp b', 'n &nbsp h', 'h &nbsp n'];
+  var char04_2 = ['gā', 'gē', 'gū', 'kā', 'kē', 'kū', 'hā', 'hē', 'hū', 'gá', 'gé', 'gú', 'ká', 'ké', 'kú', 'há', 'hé', 'hú', 'gǎ', 'gě', 'gǔ', 'kǎ', 'kě', 'kǔ', 'hǎ', 'hě', 'hǔ', 'gà', 'gè', 'gù', 'kà', 'kè', 'kù', 'hà', 'hè', 'hù'];
+  var char04_3 = ['guā', 'guá', 'guǎ', 'guà', 'kuā', 'kuá', 'kuǎ', 'kuà', 'huā', 'huá', 'huǎ', 'huà'];
+  var char04_9 = char03_9.concat(char04_2, char04_3);
+  var char05 = "j  q  x";
+  var char05_0 = ['j', 'q', 'x'];
+  var char05_1 = ['q &nbsp b', 'q &nbsp p', 'q &nbsp d', 'b &nbsp q', 'p &nbsp q', 'd &nbsp q'];
+  var char05_2 = ['jī', 'jū', 'qī', 'qū', 'xī', 'xū', 'jí', 'jú', 'qí', 'qú', 'xí', 'xú', 'jǐ', 'jǔ', 'qǐ', 'qǔ', 'xǐ', 'xǔ', 'jì', 'jù', 'qì', 'qù', 'xì', 'xù']; 
+  var char05_3 = ['jiā',  'qiā', 'xiā', 'jiá', 'qiá', 'xiá', 'jiǎ','qiǎ', 'xiǎ', 'jià', 'qià', 'xià'];
+  var char05_9 = char04_9.concat(char05_2, char05_3);
+  var char06 = "z  c  s";
+  var char06_0 = ['z', 'c', 's'];
+  var char06_1 = ['zī', 'cī', 'sī', 'zí', 'cí', 'sí', 'zǐ', 'cǐ', 'sǐ', 'zì', 'cì', 'sì'];
+  var char06_2 = ['zā', 'zē', 'zū', 'cā', 'cē', 'cū', 'sā', 'sē', 'sū', 'zá', 'zé', 'zú', 'cá', 'cé', 'cú', 'sá', 'sé', 'sú', 'zǎ', 'zě', 'zǔ', 'cǎ', 'cě', 'cǔ', 'sǎ', 'sě', 'sǔ', 'zà', 'zè', 'zù', 'cà', 'cè', 'cù', 'sà', 'sè', 'sù'];
+  var char06_3 = ['zuō', 'cuō', 'suō', 'zuó', 'cuó', 'suó', 'zuǒ', 'cuǒ', 'suǒ', 'zuò', 'cuò', 'suò' ];
+  var char06_9 = char05_9.concat(char06_1, char06_2, char06_3);
+  var char07 = "zh  ch  sh  r";
+  var char07_0 = ['zh', 'ch', 'sh'];
+  var char07__0 = ['zh &nbsp z', 'ch &nbsp c', 'sh &nbsp s', 'z &nbsp zh', 'c &nbsp ch','s &nbsp sh'];
+  var char07_1 = ['zhī', 'chī', 'shī', 'rī', 'zhí', 'chí', 'shí', 'rí', 'zhǐ', 'chǐ', 'shǐ', 'rǐ', 'zhì', 'chì', 'shì', 'rì'];
+  var char07_2 = ['zhā',  'zhē',  'zhū', 'chā',  'chē',  'chū', 'shā', 'shē', 'shū', 'rā', 'rē', 'rū', 'zhá',  'zhé', 'zhú', 'chá', 'ché', 'chú', 'shá', 'shé', 'shú', 'rá', 'ré', 'rú', 'zhǎ',  'zhě', 'zhǔ', 'chǎ',  'chě', 'chǔ', 'shǎ', 'shě', 'shǔ', 'rǎ', 'rě', 'rǔ', 'zhà',  'zhè', 'zhù', 'chà',  'chè', 'chù', 'shà', 'shè', 'shù', 'rà', 'rè', 'rù'];
+  var char07_3 = ['zhuā', 'zhuō', 'chuō', 'shuā', 'shuō', 'zhuá', 'zhuó', 'chuó', 'shuá', 'shuó', 'zhuǎ', 'zhuǒ', 'chuǒ', 'shuǎ', 'shuǒ', 'zhuà', 'zhuò', 'chuò', 'shuà', 'shuò', 'ruō', 'ruó', 'ruǒ', 'ruò'];
+  var char07_9 = char06_9.concat(char07_1, char07_2, char07_3);
+  var char08 = "y  w";
+  var char08_0 = ['y', 'w'];
+  var char08_1 = ['yī', 'wū', 'yí', 'wú', 'yǐ', 'wǔ', 'yì', 'wù', 'yū', 'yú', 'yǔ', 'yù'];
+  var char08_2 = [ 'yā', 'wā', 'wō', 'yá', 'wá', 'wó', 'yǎ', 'wǎ', 'wǒ', 'yà', 'wà', 'wò'];
+  var char08_9 = char07_9.concat(char08_1, char08_2);
+  var char09 = "ai  ei  ui";
+  var char09_1 = ['ai', 'ei', 'ui'];
+  var char09_0 = ['āi', 'ái', 'ǎi', 'ài', 'ēi', 'éi', 'ěi', 'èi', 'uī', 'uí', 'uǐ', 'uì'];
+  var char09__0 = ['ai &nbsp ia', 'ia &nbsp ai', 'āi &nbsp iā', 'ái &nbsp iá', 'ǎi &nbsp iǎ', 'ài &nbsp ià', 'iā &nbsp āi', 'iá &nbsp ái', 'iǎ &nbsp ǎi', 'ià &nbsp ài'];
+  var char09_2 = ['bāi', 'bēi', 'pāi', 'pēi', 'māi', 'mēi', 'fēi', 'dāi', 'dēi', 'duī', 'tāi', 'tuī', 'nāi', 'nēi', 'lāi', 'lēi', 'gāi', 'gēi', 'guī', 'kāi', 'kēi', 'kuī', 'hāi', 'hēi', 'huī', 'zhāi', 'zhēi', 'zhuī', 'chāi', 'chuī', 'shāi', 'shēi', 'shuī', 'ruī', 'zāi', 'zēi', 'zuī', 'cāi', 'cuī', 'sāi', 'suī', 'wāi', 'wēi', 'bái', 'béi', 'pái', 'péi', 'mái', 'méi', 'féi', 'dái', 'déi', 'duí', 'tái', 'tuí', 'nái', 'néi', 'lái', 'léi', 'gái', 'géi', 'guí', 'kái', 'kéi', 'kuí', 'hái', 'héi', 'huí', 'zhái', 'zhéi', 'zhuí', 'chái', 'chuí', 'shái', 'shéi', 'shuí', 'ruí', 'zái', 'zéi', 'zuí', 'cái', 'cuí', 'sái', 'suí', 'wái', 'wéi', 'bǎi', 'běi', 'pǎi', 'pěi', 'mǎi', 'měi', 'fěi', 'dǎi', 'děi', 'duǐ', 'tǎi', 'tuǐ', 'nǎi', 'něi', 'lǎi', 'lěi', 'gǎi', 'gěi', 'guǐ', 'kǎi', 'kěi', 'kuǐ', 'hǎi', 'hěi', 'huǐ', 'zhǎi', 'zhěi', 'zhuǐ', 'chǎi', 'chuǐ', 'shǎi', 'shěi', 'shuǐ', 'ruǐ', 'zǎi', 'zěi', 'zuǐ', 'cǎi', 'cuǐ', 'sǎi', 'suǐ', 'wǎi', 'wěi', 'bài', 'bèi', 'pài', 'pèi', 'mài', 'mèi', 'fèi', 'dài', 'dèi', 'duì', 'tài', 'tuì', 'nài', 'nèi', 'lài', 'lèi', 'gài', 'gèi', 'guì', 'kài', 'kèi', 'kuì', 'hài', 'hèi', 'huì', 'zhài', 'zhèi', 'zhuì', 'chài', 'chuì', 'shài', 'shèi', 'shuì', 'ruì', 'zài', 'zèi', 'zuì', 'cài', 'cuì', 'sài', 'suì', 'wài', 'wèi'];
+  var char09_3 = ['guāi', 'guái', 'guǎi', 'guài', 'kuāi', 'kuái', 'kuǎi', 'kuài', 'huāi', 'huái', 'huǎi', 'huài', 'zhuāi', 'zhuái', 'zhuǎi', 'zhuài', 'chuāi', 'chuái', 'chuǎi', 'chuài', 'shuāi', 'shuái', 'shuǎi', 'shuài'];
+  var char09_9 = char08_9.concat(char09_2, char09_3);
+  var char10 = "ao  ou  iu";
+  var char10_0 = ['ao', 'ou', 'iu'];
+  var char10__0 = ['āo', 'áo', 'ǎo', 'ào', 'ōu', 'óu', 'ǒu', 'òu', 'iū','iú','iǔ','iù'];
+  var char10_1 = ['ou &nbsp uo', 'iu &nbsp ui', 'uo &nbsp ou', 'ui &nbsp iu'];
+  var char10_2 = ['bāo', 'pāo', 'pōu', 'māo', 'mōu', 'miū', 'fōu', 'dāo', 'dōu', 'diū', 'tāo', 'tōu', 'nāo', 'niū', 'lāo', 'lōu', 'liū', 'gāo', 'gōu', 'kāo', 'kōu', 'hāo', 'hōu', 'jiū', 'qiū', 'xiū', 'zhāo', 'zhōu', 'chāo', 'chōu', 'shāo', 'shōu', 'rāo', 'rōu', 'zāo', 'zōu', 'cāo', 'cōu', 'sāo', 'sōu', 'yāo', 'yōu',  'báo', 'páo', 'póu', 'máo', 'móu', 'miú', 'fóu', 'dáo', 'dóu', 'diú', 'táo', 'tóu', 'náo', 'niú', 'láo', 'lóu', 'liú', 'gáo', 'góu', 'káo', 'kóu', 'háo', 'hóu', 'jiú', 'qiú', 'xiú', 'zháo', 'zhóu', 'cháo', 'chóu', 'sháo', 'shóu', 'ráo', 'róu', 'záo', 'zóu', 'cáo', 'cóu', 'sáo', 'sóu', 'yáo', 'yóu',  'bǎo', 'pǎo', 'pǒu', 'mǎo', 'mǒu', 'miǔ', 'fǒu', 'dǎo', 'dǒu', 'diǔ', 'tǎo', 'tǒu', 'nǎo', 'niǔ', 'lǎo', 'lǒu', 'liǔ', 'gǎo', 'gǒu', 'kǎo', 'kǒu', 'hǎo', 'hǒu', 'jiǔ', 'qiǔ', 'xiǔ', 'zhǎo', 'zhǒu', 'chǎo', 'chǒu', 'shǎo', 'shǒu', 'rǎo', 'rǒu', 'zǎo', 'zǒu', 'cǎo', 'cǒu', 'sǎo', 'sǒu', 'yǎo', 'yǒu',  'bào', 'pào', 'pòu', 'mào', 'mòu', 'miù', 'fòu', 'dào', 'dòu', 'diù', 'tào', 'tòu', 'nào', 'niù', 'lào', 'lòu', 'liù', 'gào', 'gòu', 'kào', 'kòu', 'hào', 'hòu', 'jiù', 'qiù', 'xiù', 'zhào', 'zhòu', 'chào', 'chòu', 'shào', 'shòu', 'rào', 'ròu', 'zào', 'zòu', 'cào', 'còu', 'sào', 'sòu', 'yào', 'yòu'];
+  var char10_3 = ['biāo', 'piāo', 'miāo', 'diāo', 'tiāo', 'niāo', 'liāo', 'jiāo', 'qiāo', 'xiāo', 'biáo', 'piáo', 'miáo', 'diáo', 'tiáo', 'niáo', 'liáo', 'jiáo', 'qiáo', 'xiáo', 'biǎo', 'piǎo', 'miǎo', 'diǎo', 'tiǎo', 'niǎo', 'liǎo', 'jiǎo', 'qiǎo', 'xiǎo', 'biào', 'piào', 'miào', 'diào', 'tiào', 'niào', 'liào', 'jiào', 'qiào', 'xiào'];
+  var char10_9 = char09_9.concat(char10_2, char10_3);
+  var char11 = "ie  üe  er";
+  var char11_0 = ['ie', 'üe', 'er'];
+  var char11__0 = ['iē', 'ié', 'iě', 'iè', 'üē', 'üé', 'üě', 'üè', 'ēr', 'ér', 'ěr', 'èr'];
+  var char11_1 = ['ie &nbsp ei', 'er &nbsp re', 'ei &nbsp ie', 're &nbsp er'];
+  var char11_11 = ['yē', 'yuē', 'yé', 'yué', 'yě', 'yuě', 'yè', 'yuè'];
+  var char11_2 = ['biē', 'piē', 'miē', 'diē', 'tiē', 'niē', 'nüē', 'liē', 'lüē', 'jiē', 'juē', 'qiē', 'quē', 'xiē', 'xuē', 'bié', 'pié', 'mié', 'dié', 'tié', 'nié', 'nüé', 'lié', 'lüé', 'jié', 'jué', 'qié', 'qué', 'xié', 'xué', 'biě', 'piě', 'miě', 'diě', 'tiě', 'niě', 'nüě', 'liě', 'lüě', 'jiě', 'juě', 'qiě', 'quě', 'xiě', 'xuě', 'biè', 'piè', 'miè', 'diè', 'tiè', 'niè', 'nüè', 'liè', 'lüè', 'jiè', 'juè', 'qiè', 'què', 'xiè', 'xuè'];
+  var char11_9 = char10_9.concat(char11_11, char11_2);
+  var char12 = "an  en  in  un  ün";
+  var char12_0 = ['an', 'en', 'in', 'un', 'ün'];
+  var char12__0 = ['ān', 'án', 'ǎn', 'àn', 'ēn', 'én', 'ěn', 'èn', 'īn', 'ín', 'ǐn', 'ìn', 'ūn','ún','ǔn','ùn', 'ǖn', 'ǘn', 'ǚn', 'ǜn'];
+  var char12_1 = ['an &nbsp na', 'en &nbsp ne', 'in &nbsp ni', 'un &nbsp nu', 'ün &nbsp nü', 'na &nbsp an', 'ne &nbsp en', 'ni &nbsp in', 'nu &nbsp un', 'nü &nbsp ün'];
+  var char12_11 = ['yuān', 'yīn', 'yūn', 'yuán', 'yín', 'yún', 'yuǎn', 'yǐn', 'yǔn', 'yuàn', 'yìn', 'yùn'];
+  var char12_2 = ['bān', 'bēn', 'bīn', 'pān', 'pēn', 'pīn', 'mān', 'mēn', 'mīn', 'fān', 'fēn', 'dān', 'dūn', 'tān', 'tūn', 'nān', 'nēn', 'nīn', 'lān', 'līn', 'lūn', 'gān', 'gēn', 'gūn', 'kān', 'kēn', 'kūn', 'hān', 'hēn', 'hūn', 'jīn', 'jūn', 'qīn', 'qūn', 'xīn', 'xūn', 'zhān', 'zhēn', 'zhūn', 'chān', 'chēn', 'chūn', 'shān', 'shēn', 'shūn', 'rān', 'rēn', 'rūn', 'zān', 'zēn', 'zūn', 'cān', 'cēn', 'cūn', 'sān', 'sēn', 'sūn', 'yān', 'wān', 'wēn', 'bán', 'bén', 'bín', 'pán', 'pén', 'pín', 'mán', 'mén', 'mín', 'fán', 'fén', 'dán', 'dún', 'tán', 'tún', 'nán', 'nén', 'nín', 'lán', 'lín', 'lún', 'gán', 'gén', 'gún', 'kán', 'kén', 'kún', 'hán', 'hén', 'hún', 'jín', 'jún', 'qín', 'qún', 'xín', 'xún', 'zhán', 'zhén', 'zhún', 'chán', 'chén', 'chún', 'shán', 'shén', 'shún', 'rán', 'rén', 'rún', 'zán', 'zén', 'zún', 'cán', 'cén', 'cún', 'sán', 'sén', 'sún', 'yán', 'wán', 'wén','bǎn', 'běn', 'bǐn', 'pǎn', 'pěn', 'pǐn', 'mǎn', 'měn', 'mǐn', 'fǎn', 'fěn', 'dǎn', 'dǔn', 'tǎn', 'tǔn', 'nǎn', 'něn', 'nǐn', 'lǎn', 'lǐn', 'lǔn', 'gǎn', 'gěn', 'gǔn', 'kǎn', 'kěn', 'kǔn', 'hǎn', 'hěn', 'hǔn', 'jǐn', 'jǔn', 'qǐn', 'qǔn', 'xǐn', 'xǔn', 'zhǎn', 'zhěn', 'zhǔn', 'chǎn', 'chěn', 'chǔn', 'shǎn', 'shěn', 'shǔn', 'rǎn', 'rěn', 'rǔn', 'zǎn', 'zěn', 'zǔn', 'cǎn', 'cěn', 'cǔn', 'sǎn', 'sěn', 'sǔn', 'yǎn', 'wǎn', 'wěn', 'bàn', 'bèn', 'bìn', 'pàn', 'pèn', 'pìn', 'màn', 'mèn', 'mìn', 'fàn', 'fèn', 'dàn', 'dùn', 'tàn', 'tùn', 'nàn', 'nèn', 'nìn', 'làn', 'lìn', 'lùn', 'gàn', 'gèn', 'gùn', 'kàn', 'kèn', 'kùn', 'hàn', 'hèn', 'hùn', 'jìn', 'jùn', 'qìn', 'qùn', 'xìn', 'xùn', 'zhàn', 'zhèn', 'zhùn', 'chàn', 'chèn', 'chùn', 'shàn', 'shèn', 'shùn', 'ràn', 'rèn', 'rùn', 'zàn', 'zèn', 'zùn', 'càn', 'cèn', 'cùn', 'sàn', 'sèn', 'sùn', 'yàn', 'wàn', 'wèn'];
+  var char12_3 = ['biān', 'piān', 'miān', 'diān', 'duān', 'tiān', 'tuān', 'niān', 'nuān', 'liān', 'luān', 'guān', 'kuān', 'huān', 'jiān', 'juān', 'qiān', 'quān', 'xiān', 'xuān', 'zhuān', 'chuān', 'shuān', 'ruān', 'zuān', 'cuān', 'suān', 'bián', 'pián', 'mián', 'dián', 'duán', 'tián', 'tuán', 'nián', 'nuán', 'lián', 'luán', 'guán', 'kuán', 'huán', 'jián', 'juán', 'qián', 'quán', 'xián', 'xuán', 'zhuán', 'chuán', 'shuán', 'ruán', 'zuán', 'cuán', 'suán', 'biǎn', 'piǎn', 'miǎn', 'diǎn', 'duǎn', 'tiǎn', 'tuǎn', 'niǎn', 'nuǎn', 'liǎn', 'luǎn', 'guǎn', 'kuǎn', 'huǎn', 'jiǎn', 'juǎn', 'qiǎn', 'quǎn', 'xiǎn', 'xuǎn', 'zhuǎn', 'chuǎn', 'shuǎn', 'ruǎn', 'zuǎn', 'cuǎn', 'suǎn', 'biàn', 'piàn', 'miàn', 'diàn', 'duàn', 'tiàn', 'tuàn', 'niàn', 'nuàn', 'liàn', 'luàn', 'guàn', 'kuàn', 'huàn', 'jiàn', 'juàn', 'qiàn', 'quàn', 'xiàn', 'xuàn', 'zhuàn', 'chuàn', 'shuàn', 'ruàn', 'zuàn', 'cuàn', 'suàn'];
+  var char12_9 = char11_9.concat(char12_11, char12_2, char12_3);
+  var char13 = "ang  eng  ing  ong";
+  var char13_0 = ['ang', 'eng', 'ing', 'ong'];
+  var char13__0 = ['āng', 'áng', 'ǎng', 'àng', 'ēng', 'éng', 'ěng', 'èng', 'īng', 'íng', 'ǐng', 'ìng', 'ōng','óng','ǒng','òng'];
+  var char13_1 = ['ang &nbsp an', 'eng &nbsp en', 'ing &nbsp in', 'an &nbsp ang', 'en &nbsp eng', 'in &nbsp ing'];
+  var char13_11 = ['yīng', 'yíng', 'yǐng', 'yìng'];
+  var char13_2 = ['bāng', 'bēng', 'bīng', 'pāng', 'pēng', 'pīng', 'māng', 'mēng', 'mīng', 'fāng', 'fēng', 'dāng', 'dēng', 'dīng', 'dōng', 'tāng', 'tēng', 'tīng', 'tōng', 'nāng', 'nēng', 'nīng', 'nōng', 'lāng', 'lēng', 'līng', 'lōng', 'gāng', 'gēng', 'gōng', 'kāng', 'kēng', 'kōng', 'hāng', 'hēng', 'hōng', 'jīng', 'qīng', 'xīng', 'zhāng', 'zhēng', 'zhōng', 'chāng', 'chēng', 'chōng', 'shāng', 'shēng', 'rāng', 'rēng', 'rōng', 'zāng', 'zēng', 'zōng', 'cāng', 'cēng', 'cōng', 'sāng', 'sēng', 'sōng', 'yāng', 'yōng', 'wāng', 'wēng', 'báng', 'béng', 'bíng', 'páng', 'péng', 'píng', 'máng', 'méng', 'míng', 'fáng', 'féng', 'dáng', 'déng', 'díng', 'dóng', 'táng', 'téng', 'tíng', 'tóng', 'náng', 'néng', 'níng', 'nóng', 'láng', 'léng', 'líng', 'lóng', 'gáng', 'géng', 'góng', 'káng', 'kéng', 'kóng', 'háng', 'héng', 'hóng', 'jíng', 'qíng', 'xíng', 'zháng', 'zhéng', 'zhóng', 'cháng', 'chéng', 'chóng', 'sháng', 'shéng', 'ráng', 'réng', 'róng', 'záng', 'zéng', 'zóng', 'cáng', 'céng', 'cóng', 'sáng', 'séng', 'sóng', 'yáng', 'yóng', 'wáng', 'wéng', 'bǎng', 'běng', 'bǐng', 'pǎng', 'pěng', 'pǐng', 'mǎng', 'měng', 'mǐng', 'fǎng', 'fěng', 'dǎng', 'děng', 'dǐng', 'dǒng', 'tǎng', 'těng', 'tǐng', 'tǒng', 'nǎng', 'něng', 'nǐng', 'nǒng', 'lǎng', 'lěng', 'lǐng', 'lǒng', 'gǎng', 'gěng', 'gǒng', 'kǎng', 'kěng', 'kǒng', 'hǎng', 'hěng', 'hǒng', 'jǐng', 'qǐng', 'xǐng', 'zhǎng', 'zhěng', 'zhǒng', 'chǎng', 'chěng', 'chǒng', 'shǎng', 'shěng', 'rǎng', 'rěng', 'rǒng', 'zǎng', 'zěng', 'zǒng', 'cǎng', 'cěng', 'cǒng', 'sǎng', 'sěng', 'sǒng', 'yǎng', 'yǒng', 'wǎng', 'wěng', 'bàng', 'bèng', 'bìng', 'pàng', 'pèng', 'pìng', 'màng', 'mèng', 'mìng', 'fàng', 'fèng', 'dàng', 'dèng', 'dìng', 'dòng', 'tàng', 'tèng', 'tìng', 'tòng', 'nàng', 'nèng', 'nìng', 'nòng', 'làng', 'lèng', 'lìng', 'lòng', 'gàng', 'gèng', 'gòng', 'kàng', 'kèng', 'kòng', 'hàng', 'hèng', 'hòng', 'jìng', 'qìng', 'xìng', 'zhàng', 'zhèng', 'zhòng', 'chàng', 'chèng', 'chòng', 'shàng', 'shèng', 'ràng', 'rèng', 'ròng', 'zàng', 'zèng', 'zòng', 'càng', 'cèng', 'còng', 'sàng', 'sèng', 'sòng', 'yàng', 'yòng', 'wàng', 'wèng'];
+  var char13_3 = [ 'niāng', 'liāng', 'guāng', 'kuāng', 'huāng', 'jiāng', 'jiōng', 'qiāng', 'qiōng', 'xiāng', 'xiōng', 'zhuāng', 'chuāng', 'shuāng', 'niáng', 'liáng', 'guáng', 'kuáng', 'huáng', 'jiáng', 'jióng', 'qiáng', 'qióng', 'xiáng', 'xióng', 'zhuáng', 'chuáng', 'shuáng', 'niǎng', 'liǎng', 'guǎng', 'kuǎng', 'huǎng', 'jiǎng', 'jiǒng', 'qiǎng', 'qiǒng', 'xiǎng', 'xiǒng', 'zhuǎng', 'chuǎng', 'shuǎng', 'niàng', 'liàng', 'guàng', 'kuàng', 'huàng', 'jiàng', 'jiòng', 'qiàng', 'qiòng', 'xiàng', 'xiòng', 'zhuàng', 'chuàng', 'shuàng'];
+  var char13_9 = char12_9.concat(char13_11, char13_2, char13_3);
+  var char14 = "<p style=\"font-size: 80px;\">zhi &nbsp &nbsp  chi &nbsp &nbsp shi &nbsp &nbsp ri<br>zi &nbsp &nbsp ci &nbsp &nbsp si<br>yi &nbsp &nbsp wu &nbsp &nbsp yu<br>ye &nbsp &nbsp yue &nbsp &nbsp yuan<br>yin &nbsp &nbsp yun &nbsp &nbsp ying</p>";
+  var char14_0 = ['zhi', 'chi', 'shi', 'ri'];
+  var char14__0 = ['zhī', 'chī', 'shī', 'rī', 'zī', 'cī', 'sī', 'yī', 'wū', 'yū', 'yē', 'yuē', 'yīn', 'yūn', 'yuān', 'yīng', 'zhí', 'chí', 'shí', 'rí', 'zí', 'cí', 'sí', 'yí', 'wú', 'yú', 'yé', 'yué', 'yín', 'yún', 'yuán', 'yíng', 'zhǐ', 'chǐ', 'shǐ', 'rǐ', 'zǐ', 'cǐ', 'sǐ', 'yǐ', 'wǔ', 'yǔ', 'yě', 'yuě', 'yǐn', 'yǔn', 'yuǎn', 'yǐng', 'zhì', 'chì', 'shì', 'rì', 'zì', 'cì', 'sì', 'yì', 'wù', 'yù', 'yè', 'yuè', 'yìn', 'yùn', 'yuàn', 'yìng'];
+  var char15 = char13_9;
+  //初始化各项目分数
+  var point01_0 = new Object; for(var s=0;s<char01_0.length;s++){point01_0[char01_0[s]]=0;}
+  var point01__0 = new Object; for(var s=0;s<char01__0.length;s++){point01__0[char01__0[s]]=0;}
+  var point02_0 = new Object; for(var s=0;s<char02_0.length;s++){point02_0[char02_0[s]]=0;}
+  var point02_2 = new Object; for(var s=0;s<char02_2.length;s++){point02_2[char02_2[s]]=0;}
+  var point03_0 = new Object; for(var s=0;s<char03_0.length;s++){point03_0[char03_0[s]]=0;}
+  var point03_1 = new Object; for(var s=0;s<char03_1.length;s++){point03_1[char03_1[s]]=0;}
+  var point03_2 = new Object; for(var s=0;s<char03_2.length;s++){point03_2[char03_2[s]]=0;}
+  var point03_3 = new Object; for(var s=0;s<char03_3.length;s++){point03_3[char03_3[s]]=0;}
+  var point03_9 = new Object; for(var s=0;s<char03_9.length;s++){point03_9[char03_9[s]]=0;}
+  var point04_0 = new Object; for(var s=0;s<char04_0.length;s++){point04_0[char04_0[s]]=0;}
+  var point04_1 = new Object; for(var s=0;s<char04_1.length;s++){point04_1[char04_1[s]]=0;}
+  var point04_2 = new Object; for(var s=0;s<char04_2.length;s++){point04_2[char04_2[s]]=0;}
+  var point04_3 = new Object; for(var s=0;s<char04_3.length;s++){point04_3[char04_3[s]]=0;}
+  var point04_9 = new Object; for(var s=0;s<char04_9.length;s++){point04_9[char04_9[s]]=0;}
+  var point05_0 = new Object; for(var s=0;s<char05_0.length;s++){point05_0[char05_0[s]]=0;}
+  var point05_1 = new Object; for(var s=0;s<char05_1.length;s++){point05_1[char05_1[s]]=0;}
+  var point05_2 = new Object; for(var s=0;s<char05_2.length;s++){point05_2[char05_2[s]]=0;}
+  var point05_3 = new Object; for(var s=0;s<char05_3.length;s++){point05_3[char05_3[s]]=0;}
+  var point05_9 = new Object; for(var s=0;s<char05_9.length;s++){point05_9[char05_9[s]]=0;}
+  var point06_0 = new Object; for(var s=0;s<char06_0.length;s++){point06_0[char06_0[s]]=0;}
+  var point06_1 = new Object; for(var s=0;s<char06_1.length;s++){point06_1[char06_1[s]]=0;}
+  var point06_2 = new Object; for(var s=0;s<char06_2.length;s++){point06_2[char06_2[s]]=0;}
+  var point06_3 = new Object; for(var s=0;s<char06_3.length;s++){point06_3[char06_3[s]]=0;}
+  var point06_9 = new Object; for(var s=0;s<char06_9.length;s++){point06_9[char06_9[s]]=0;}
+  var point07_0 = new Object; for(var s=0;s<char07_0.length;s++){point07_0[char07_0[s]]=0;}
+  var point07__0 = new Object; for(var s=0;s<char07__0.length;s++){point07__0[char07__0[s]]=0;}
+  var point07_1 = new Object; for(var s=0;s<char07_1.length;s++){point07_1[char07_1[s]]=0;}
+  var point07_2 = new Object; for(var s=0;s<char07_2.length;s++){point07_2[char07_2[s]]=0;}
+  var point07_3 = new Object; for(var s=0;s<char07_3.length;s++){point07_3[char07_3[s]]=0;}
+  var point07_9 = new Object; for(var s=0;s<char07_9.length;s++){point07_9[char07_9[s]]=0;}
+  var point08_0 = new Object; for(var s=0;s<char08_0.length;s++){point08_0[char08_0[s]]=0;}
+  var point08_1 = new Object; for(var s=0;s<char08_1.length;s++){point08_1[char08_1[s]]=0;}
+  var point08_2 = new Object; for(var s=0;s<char08_2.length;s++){point08_2[char08_2[s]]=0;}
+  var point08_9 = new Object; for(var s=0;s<char08_9.length;s++){point08_9[char08_9[s]]=0;}
+  var point09_1 = new Object; for(var s=0;s<char09_1.length;s++){point09_1[char09_1[s]]=0;}
+  var point09_0 = new Object; for(var s=0;s<char09_0.length;s++){point09_0[char09_0[s]]=0;}
+  var point09__0 = new Object; for(var s=0;s<char09__0.length;s++){point09__0[char09__0[s]]=0;}
+  var point09_2 = new Object; for(var s=0;s<char09_2.length;s++){point09_2[char09_2[s]]=0;}
+  var point09_3 = new Object; for(var s=0;s<char09_3.length;s++){point09_3[char09_3[s]]=0;}
+  var point09_9 = new Object; for(var s=0;s<char09_9.length;s++){point09_9[char09_9[s]]=0;}
+  var point10_0 = new Object; for(var s=0;s<char10_0.length;s++){point10_0[char10_0[s]]=0;}
+  var point10__0 = new Object; for(var s=0;s<char10__0.length;s++){point10__0[char10__0[s]]=0;}
+  var point10_1 = new Object; for(var s=0;s<char10_1.length;s++){point10_1[char10_1[s]]=0;}
+  var point10_2 = new Object; for(var s=0;s<char10_2.length;s++){point10_2[char10_2[s]]=0;}
+  var point10_3 = new Object; for(var s=0;s<char10_3.length;s++){point10_3[char10_3[s]]=0;}
+  var point10_9 = new Object; for(var s=0;s<char10_9.length;s++){point10_9[char10_9[s]]=0;}
+  var point11_0 = new Object; for(var s=0;s<char11_0.length;s++){point11_0[char11_0[s]]=0;}
+  var point11__0 = new Object; for(var s=0;s<char11__0.length;s++){point11__0[char11__0[s]]=0;}
+  var point11_1 = new Object; for(var s=0;s<char11_1.length;s++){point11_1[char11_1[s]]=0;}
+  var point11_11 = new Object; for(var s=0;s<char11_11.length;s++){point11_11[char11_11[s]]=0;}
+  var point11_2 = new Object; for(var s=0;s<char11_2.length;s++){point11_2[char11_2[s]]=0;}
+  var point11_9 = new Object; for(var s=0;s<char11_9.length;s++){point11_9[char11_9[s]]=0;}
+  var point12_0 = new Object; for(var s=0;s<char12_0.length;s++){point12_0[char12_0[s]]=0;}
+  var point12__0 = new Object; for(var s=0;s<char12__0.length;s++){point12__0[char12__0[s]]=0;}
+  var point12_1 = new Object; for(var s=0;s<char12_1.length;s++){point12_1[char12_1[s]]=0;}
+  var point12_11 = new Object; for(var s=0;s<char12_11.length;s++){point12_11[char12_11[s]]=0;}
+  var point12_2 = new Object; for(var s=0;s<char12_2.length;s++){point12_2[char12_2[s]]=0;}
+  var point12_3 = new Object; for(var s=0;s<char12_3.length;s++){point12_3[char12_3[s]]=0;}
+  var point12_9 = new Object; for(var s=0;s<char12_9.length;s++){point12_9[char12_9[s]]=0;}
+  var point13_0 = new Object; for(var s=0;s<char13_0.length;s++){point13_0[char13_0[s]]=0;}
+  var point13__0 = new Object; for(var s=0;s<char13__0.length;s++){point13__0[char13__0[s]]=0;}
+  var point13_1 = new Object; for(var s=0;s<char13_1.length;s++){point13_1[char13_1[s]]=0;}
+  var point13_11 = new Object; for(var s=0;s<char13_11.length;s++){point13_11[char13_11[s]]=0;}
+  var point13_2 = new Object; for(var s=0;s<char13_2.length;s++){point13_2[char13_2[s]]=0;}
+  var point13_3 = new Object; for(var s=0;s<char13_3.length;s++){point13_3[char13_3[s]]=0;}
+  var point13_9 = new Object; for(var s=0;s<char13_9.length;s++){point13_9[char13_9[s]]=0;}
+  var point14_0 = new Object; for(var s=0;s<char14_0.length;s++){point14_0[char14_0[s]]=0;}
+  var point14__0 = new Object; for(var s=0;s<char14__0.length;s++){point14__0[char14__0[s]]=0;}
+  var point15 = new Object; for(var s=0;s<char15.length;s++){point15[char15[s]]=0;}
+  
+  // 展示新课
+  function lesson(chars, level){
+    var res = chars;
+    var par = "#par" + level
+    $(par).html(function(){
+      return res; 
+    });
+  }
+
+  // 测试
+  function practice(chars, points, level){
+    // 解除计时
+    clearTimeout(timer);
+    // 如果有元素得分为pass_time变量,则将该元素从chars中删去
+    var i=0;
+    for(i; i<chars.length; i++){
+      if(points[chars[i]]>=pass_time){
+        chars.splice(i,1);
+        // var new_chars = chars.join(); 
+        // alert(new_chars);
+        break;
+      }
+    }
+    // 检查chars是否有元素
+    if (chars.length == 0){
+      alert("恭喜恭喜！大家恭喜！您已经顺利过关啦！\n\n还想再来一次吗？——那就刷新网页吧！\n——不过，右上角的分数会被清零哦！\n\n还是进入下一关吧！");
+      $(this).css("color", "blue").html("已过关");
+      return false;
+    }
+    else{
+      //随机选择一个元素进行测试
+      var res = "";
+      var id = Math.floor(Math.random()*chars.length);
+      res = chars[id];
+      ++points[res];
+      ++score;
+      var par = "#par" + level;
+      $(par).html(function(){ return res; });
+      $(".ui-li-count").html(function(){return score});
+      // var yesgood = ""; for(i in points){ yesgood=yesgood+points[i];}; alert(yesgood);
+      // var new_chars = chars.join(); alert(new_chars);
+      // 设置超时
+      timer = setTimeout(function(){alert("可不要气馁~~\n\n我们再来一次吧！");--points[res];--score;$(".ui-li-count").html(function(){return score});}, maxtime);   //
+    }
+  }
+
+  // 具体按键
+  // 设置训练强度
+  $(".settings").click(function(){
+    maxtime=prompt("每个项目的测试时间\n单位：毫秒 （1秒=1000毫秒）", "5000");
+    pass_time=prompt("每个项目的测试次数", "3");
+  });
+
+  // 测试按钮
+  $("#btn01").click(function(){lesson(char01, "01")});
+  $("#btn01_0").click(function(){practice(char01_0, point01_0, "01")});
+  $("#btn01__0").click(function(){practice(char01__0, point01__0, "01")});
+  $("#btn02").click(function(){lesson(char02, "02")});
+  $("#btn02_0").click(function(){practice(char02_0, point02_0, "02")});
+  $("#btn02_2").click(function(){practice(char02_2, point02_2, "02")});
+  $("#btn03").click(function(){lesson(char03, "03")});
+  $("#btn03_0").click(function(){practice(char03_0, point03_0, "03")});
+  $("#btn03_1").click(function(){practice(char03_1, point03_1, "03")});
+  $("#btn03_2").click(function(){practice(char03_2, point03_2, "03")});
+  $("#btn03_3").click(function(){practice(char03_3, point03_3, "03")});
+  $("#btn03_9").click(function(){practice(char03_9, point03_9, "03")});
+  $("#btn04").click(function(){lesson(char04, "04")});
+  $("#btn04_0").click(function(){practice(char04_0, point04_0, "04")});
+  $("#btn04_1").click(function(){practice(char04_1, point04_1, "04")});
+  $("#btn04_2").click(function(){practice(char04_2, point04_2, "04")});
+  $("#btn04_2").click(function(){practice(char04_2, point04_2, "04")});
+  $("#btn04_3").click(function(){practice(char04_3, point04_3, "04")});
+  $("#btn04_9").click(function(){practice(char04_9, point04_9, "04")});
+  $("#btn05").click(function(){lesson(char05, "05")});
+  $("#btn05_0").click(function(){practice(char05_0, point05_0, "05")});
+  $("#btn05_1").click(function(){practice(char05_1, point05_1, "05")});
+  $("#btn05_2").click(function(){practice(char05_2, point05_2, "05")});
+  $("#btn05_3").click(function(){practice(char05_3, point05_3, "05")});
+  $("#btn05_9").click(function(){practice(char05_9, point05_9, "05")});
+  $("#btn06").click(function(){lesson(char06, "06")});
+  $("#btn06_0").click(function(){practice(char06_0, point06_0, "06")});
+  $("#btn06_1").click(function(){practice(char06_1, point06_1, "06")});
+  $("#btn06_2").click(function(){practice(char06_2, point06_2, "06")});
+  $("#btn06_3").click(function(){practice(char06_3, point06_3, "06")});
+  $("#btn06_9").click(function(){practice(char06_9, point06_9, "06")});
+  $("#btn07").click(function(){lesson(char07, "07")});
+  $("#btn07_0").click(function(){practice(char07_0, point07_0, "07")});
+  $("#btn07__0").click(function(){practice(char07__0, point07__0, "07")});
+  $("#btn07_1").click(function(){practice(char07_1, point07_1, "07")});
+  $("#btn07_2").click(function(){practice(char07_2, point07_2, "07")});
+  $("#btn07_3").click(function(){practice(char07_3, point07_3, "07")});
+  $("#btn07_9").click(function(){practice(char07_9, point07_9, "07")});
+  $("#btn08").click(function(){lesson(char08, "08")});
+  $("#btn08_0").click(function(){practice(char08_0, point08_0, "08")});
+  $("#btn08__0").click(function(){practice(char08__0, point08__0, "08")});
+  $("#btn08_1").click(function(){practice(char08_1, point08_1, "08")});
+  $("#btn08_2").click(function(){practice(char08_2, point08_2, "08")});
+  $("#btn08_9").click(function(){practice(char08_9, point08_9, "08")});
+  $("#btn09").click(function(){lesson(char09, "09")});
+  $("#btn09_0").click(function(){practice(char09_0, point09_0, "09")});
+  $("#btn09__0").click(function(){practice(char09__0, point09__0, "09")});
+  $("#btn09_1").click(function(){practice(char09_1, point09_1, "09")});
+  $("#btn09_2").click(function(){practice(char09_2, point09_2, "09")});
+  $("#btn09_3").click(function(){practice(char09_3, point09_3, "09")});
+  $("#btn09_9").click(function(){practice(char09_9, point09_9, "09")});
+  $("#btn10").click(function(){lesson(char10, "10")});
+  $("#btn10_0").click(function(){practice(char10_0, point10_0, "10")});
+  $("#btn10__0").click(function(){practice(char10__0, point10__0, "10")});
+  $("#btn10_1").click(function(){practice(char10_1, point10_1, "10")});
+  $("#btn10_2").click(function(){practice(char10_2, point10_2, "10")});
+  $("#btn10_3").click(function(){practice(char10_3, point10_3, "10")});
+  $("#btn10_9").click(function(){practice(char10_9, point10_9, "10")});
+  $("#btn11").click(function(){lesson(char11, "11")});
+  $("#btn11_0").click(function(){practice(char11_0, point11_0, "11")});
+  $("#btn11__0").click(function(){practice(char11__0, point11__0, "11")});
+  $("#btn11_1").click(function(){practice(char11_1, point11_1, "11")});
+  $("#btn11_11").click(function(){practice(char11_11, point11_11, "11")});
+  $("#btn11_2").click(function(){practice(char11_2, point11_2, "11")});
+  $("#btn11_3").click(function(){practice(char11_3, point11_3, "11")});
+  $("#btn11_9").click(function(){practice(char11_9, point11_9, "11")});
+  $("#btn12").click(function(){lesson(char12, "12")});
+  $("#btn12_0").click(function(){practice(char12_0, point12_0, "12")});
+  $("#btn12__0").click(function(){practice(char12__0, point12__0, "12")});
+  $("#btn12_1").click(function(){practice(char12_1, point12_1, "12")});
+  $("#btn12_11").click(function(){practice(char12_11, point12_11, "12")});
+  $("#btn12_2").click(function(){practice(char12_2, point12_2, "12")});
+  $("#btn12_3").click(function(){practice(char12_3, point12_3, "12")});
+  $("#btn12_9").click(function(){practice(char12_9, point12_9, "12")}); 
+  $("#btn13").click(function(){lesson(char13, "13")});
+  $("#btn13_0").click(function(){practice(char13_0, point13_0, "13")});
+  $("#btn13__0").click(function(){practice(char13__0, point13__0, "13")});
+  $("#btn13_1").click(function(){practice(char13_1, point13_1, "13")});
+  $("#btn13_11").click(function(){practice(char13_11, point13_11, "13")});
+  $("#btn13_2").click(function(){practice(char13_2, point13_2, "13")});
+  $("#btn13").click(function(){practice(char13_3, point13_3, "13")});
+  $("#btn13_9").click(function(){practice(char13_9, point13_9, "13")}); 
+  $("#btn14").click(function(){lesson(char14, "14")});
+  $("#btn14_0").click(function(){practice(char14_0, point14_0, "14")});
+  $("#btn14__0").click(function(){practice(char14__0, point14__0, "14")});
+  $("#btn15").click(function(){practice(char15, point15, "15")});
+
+});
+</script>
+</head>
+
+<body>
+
+<div data-role="page" id="homepage">
+  <div data-role="header">
+    <h1>拼音随堂练习·首页</h1>
+  </div>
+  <div data-role="content">
+    <div style="text-align: center;">
+      <p>欢迎使用！</p>
+      <a href="#index" data-role="button" data-transition="pop" style="width: 33%; margin: auto;background-color: rgb(140,191,0);">点击这里，开始练习</a>
+    </div>
+    <div data-role="collapsible" data-collapsed="false">
+      <h4>······使用提示······</h4>
+      <p>使用本应用时，您需要一位已经掌握了拼音的朋友，帮忙指正发音的瑕疵。</p>
+    </div>
+    <div data-role="collapsible">
+      <h4>······怎么版面乱七八糟的？······</h4>
+      <p>很有可能是浏览器禁用了JavaScript，您需要手动开启JavaScript。</p>
+    </div>
+    <div data-role="collapsible" >
+      <h4>······已知bug······</h4>
+      <ol>
+        <li>这里没有包含一些特殊的音节，比如“嗯”等。</li> 
+        <li>这里还包含了许多没有对应文字的音节，比如“suán”等等。</li>
+        <li>本应用源代码196行的css效果无法实现。</li>
+        <li>功能改进：如果无需数据持久化，欢迎提出意见！</li>
+      </ol>
+    </div>
+    <div data-role="collapsible">
+      <h4>······许可证······</h4>
+      <p>GPLv3。内容详见<a href="http://www.gnu.org/licenses/gpl-3.0.html">这里</a>。</p>
+    </div>
+    <div data-role="collapsible" style="text-align: center;">
+      <h4>······作者······</h4>
+      <p>我是李启训（kinder.ga@outlook.com）<br>一起参加<a href="http://www.gnu.org/home.zh-cn.html">自由软件运动</a>吧！</p>
+    </div>
+  </div><!-- content -->
+</div><!-- page -->
+
+<div data-role="page" id="index">
+  <div data-role="header">
+    <h1>拼音随堂练习·目录</h1>
+    <div data-role="navbar"> <ul>
+        <li><a href="#homepage" data-icon="arrow-l">上一页</a></li>
+        <li><a href="#one" data-icon="arrow-r">下一关</a></li>
+      </ul>
+    </div> <!-- navbar -->
+  </div>
+  <div data-role="content" style="text-align: center;">
+    <h3>请选择适当的关卡：</h3>
+    <ul data-role="listview">
+      <li> <a href="#one" data-transition="slide">第一关：a、o、e、i、u、ü</a></li>
+      <li> <a href="#two" data-transition="slide">第二关：b、p、m、f</a></li>
+      <li> <a href="#three" data-transition="slide">第三关：d、t、n、l</a></li>
+      <li> <a href="#four" data-transition="slide">第四关：g、k、h</a></li>
+      <li> <a href="#five" data-transition="slide">第五关：j、q、x</a></li>
+      <li> <a href="#six" data-transition="slide">第六关：z、c、s</a></li>
+      <li> <a href="#seven" data-transition="slide">第七关：zh、ch、sh、r</a></li>
+      <li> <a href="#eight" data-transition="slide">第八关：y、w</a></li>
+      <li> <a href="#nine" data-transition="slide">第九关：ai、ei、ui</a></li>
+      <li> <a href="#ten" data-transition="slide">第十关：ao、ou、iu</a></li>
+      <li> <a href="#eleven" data-transition="slide">第十一关：ie、üe、er</a></li>
+      <li> <a href="#twelve" data-transition="slide">第十二关：an、en、in、un、ün</a></li>
+      <li> <a href="#thirteen" data-transition="slide">第十三关：ang、eng、ing、ong</a></li>
+      <li> <a href="#forteen" data-transition="slide">第十四关：整体认读音节复习</a></li>
+      <li> <a href="#fifteen" data-transition="slide">第十五关：总复习</a></li>
+    </ul>
+  </div>
+</div>
+
+<div data-role="page" id="one">
+  <div data-role="header">
+    <h1>第一关 a o e i u </h1>
+    <button data-role="button"class="ui-btn-right"><span class="ui-li-count" style="position: relative; right: 0em;"></span></button>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#index" data-icon="arrow-l">上一关</a></li>
+        <li><a href="#index" data-icon="home">目录</a></li>
+	<li><button class="settings" data-icon="gear">设置</button></li>
+        <li><a href="#two" data-icon="arrow-r">下一关</a></li>
+      </ul>
+    </div> <!-- navbar -->
+  </div><!-- header -->
+  <div data-role="content">
+    <div class="ui-grid-b">
+      <div class="ui-block-a">
+        <button id="btn01" data-inline="true" style="width: 100%;">学习</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn01_0" data-inline="true" style="width: 100%;">巩固</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn01__0" data-inline="true" style="width: 100%;">带声调</button>
+      </div>
+    </div><!-- ui-grid-b -->
+    <p id="par01" style="font-family: helvetica; font-size: 100px; text-align: center; margin: 0px;"></p>
+  </div><!-- content -->
+</div><!-- page -->
+
+<div data-role="page" id="two">
+  <div data-role="header">
+    <h1>第二关 b p m f</h1>
+    <button data-role="button"class="ui-btn-right"><span class="ui-li-count" style="position: relative; right: 0em;"></span></button>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#one" data-icon="arrow-l">上一关</a></li>
+        <li><a href="#index" data-icon="home">目录</a></li>
+	<li><button class="settings" data-icon="gear">设置</button></li>
+        <li><a href="#three" data-icon="arrow-r">下一关</a></li>
+      </ul>
+    </div><!-- navbar -->
+  </div><!-- header -->
+  <div data-role="content">
+    <div class="ui-grid-b">
+      <div class="ui-block-a">
+        <button id="btn02" data-inline="true" style="width: 100%;">学习</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn02_0" data-inline="true" style="width: 100%;">巩固</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn02_2" data-inline="true" style="width: 100%;">两拼音节</button>
+      </div>
+    </div><!-- ui-grid-b -->
+    <p id="par02" style="font-family: helvetica; font-size: 100px; text-align: center; margin: 0px;"></p>
+  </div><!-- content -->
+</div><!-- page -->
+
+<div data-role="page" id="three">
+  <div data-role="header">
+    <h1>第三关 d t n l</h1>
+    <button data-role="button"class="ui-btn-right"><span class="ui-li-count" style="position: relative; right: 0em;"></span></button>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#two" data-icon="arrow-l">上一关</a></li>
+        <li><a href="#index" data-icon="home">目录</a></li>
+	<li><button class="settings" data-icon="gear">设置</button></li>
+        <li><a href="#four" data-icon="arrow-r">下一关</a></li>
+      </ul>
+    </div><!-- navbar -->
+  </div><!-- header -->
+  <div data-role="content">
+    <div class="ui-grid-b">
+      <div class="ui-block-a">
+        <button id="btn03" data-inline="true" style="width: 100%;">学习</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn03_0" data-inline="true" style="width: 100%;">巩固</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn03_1" data-inline="true" style="width: 100%;">比一比</button>
+      </div>
+    </div><!-- ui-grid-b -->
+    <div class="ui-grid-b">
+      <div class="ui-block-a">
+        <button id="btn03_2" data-inline="true" style="width: 100%;">两拼音节</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn03_3" data-inline="true" style="width: 100%;">三拼音节</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn03_9" data-inline="true" style="width: 100%;">复习</button>
+      </div>
+    </div><!-- ui-grid-b -->
+    <p id="par03" style="font-family: helvetica; font-size: 100px; text-align: center; margin: 0px;"></p>
+  </div><!-- content -->
+</div><!-- page -->
+
+<div data-role="page" id="four">
+  <div data-role="header">
+    <h1>第四关 g k h</h1>
+    <button data-role="button"class="ui-btn-right"><span class="ui-li-count" style="position: relative; right: 0em;"></span></button>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#three" data-icon="arrow-l">上一关</a></li>
+        <li><a href="#index" data-icon="home">目录</a></li>
+	<li><button class="settings" data-icon="gear">设置</button></li>
+        <li><a href="#five" data-icon="arrow-r">下一关</a></li>
+      </ul>
+    </div><!-- navbar -->
+  </div><!-- header -->
+  <div data-role="content">
+    <div class="ui-grid-b">
+      <div class="ui-block-a">
+        <button id="btn04" data-inline="true" style="width: 100%;">学习</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn04_0" data-inline="true" style="width: 100%;">巩固</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn04_1" data-inline="true" style="width: 100%;">比一比</button>
+      </div>
+    </div><!-- ui-grid-b -->
+    <div class="ui-grid-b">
+      <div class="ui-block-a">
+        <button id="btn04_2" data-inline="true" style="width: 100%;">两拼音节</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn04_3" data-inline="true" style="width: 100%;">三拼音节</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn04_9" data-inline="true" style="width: 100%;">复习</button>
+      </div>
+    </div><!-- ui-grid-b -->
+    <p id="par04" style="font-family: helvetica; font-size: 100px; text-align: center; margin: 0px;"></p>
+  </div><!-- content -->
+</div><!-- page -->
+
+<div data-role="page" id="five">
+  <div data-role="header">
+    <h1>第五关 j q x</h1>
+    <button data-role="button"class="ui-btn-right"><span class="ui-li-count" style="position: relative; right: 0em;"></span></button>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#four" data-icon="arrow-l">上一关</a></li>
+        <li><a href="#index" data-icon="home">目录</a></li>
+	<li><button class="settings" data-icon="gear">设置</button></li>
+        <li><a href="#six" data-icon="arrow-r">下一关</a></li>
+      </ul>
+    </div><!-- navbar -->
+  </div><!-- header -->
+  <div data-role="content">
+    <div class="ui-grid-b">
+      <div class="ui-block-a">
+        <button id="btn05" data-inline="true" style="width: 100%;">学习</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn05_0" data-inline="true" style="width: 100%;">巩固</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn05_1" data-inline="true" style="width: 100%;">比一比</button>
+      </div>
+    </div><!-- ui-grid-b -->
+    <div class="ui-grid-b">
+      <div class="ui-block-a">
+        <button id="btn05_2" data-inline="true" style="width: 100%;">两拼音节</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn05_3" data-inline="true" style="width: 100%;">三拼音节</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn05_9" data-inline="true" style="width: 100%;">复习</button>
+      </div>
+    </div><!-- ui-grid-b -->
+    <p id="par05" style="font-family: helvetica; font-size: 100px; text-align: center; margin: 0px;"></p>
+  </div><!-- content -->
+</div><!-- page -->
+
+<div data-role="page" id="six">
+  <div data-role="header">
+    <h1>第六关 z c s</h1>
+    <button data-role="button"class="ui-btn-right"><span class="ui-li-count" style="position: relative; right: 0em;"></span></button>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#five" data-icon="arrow-l">上一关</a></li>
+        <li><a href="#index" data-icon="home">目录</a></li>
+	<li><button class="settings" data-icon="gear">设置</button></li>
+        <li><a href="#seven" data-icon="arrow-r">下一关</a></li>
+      </ul>
+    </div><!-- navbar -->
+  </div><!-- header -->
+  <div data-role="content">
+    <div class="ui-grid-b">
+      <div class="ui-block-a">
+        <button id="btn06" data-inline="true" style="width: 100%;">学习</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn06_0" data-inline="true" style="width: 100%;">巩固</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn06_1" data-inline="true" style="width: 100%;">整体认读</button>
+      </div>
+    </div><!-- ui-grid-b -->
+    <div class="ui-grid-b">
+      <div class="ui-block-a">
+        <button id="btn06_2" data-inline="true" style="width: 100%;">两拼音节</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn06_3" data-inline="true" style="width: 100%;">三拼音节</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn06_9" data-inline="true" style="width: 100%;">复习</button>
+      </div>
+    </div><!-- ui-grid-b -->
+    <p id="par06" style="font-family: helvetica; font-size: 100px; text-align: center; margin: 0px;"></p>
+  </div><!-- content -->
+</div><!-- page -->
+
+<div data-role="page" id="seven">
+  <div data-role="header">
+    <h1>第七关 zh ch sh</h1>
+    <button data-role="button"class="ui-btn-right"><span class="ui-li-count" style="position: relative; right: 0em;"></span></button>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#six" data-icon="arrow-l">上一关</a></li>
+        <li><a href="#index" data-icon="home">目录</a></li>
+	<li><button class="settings" data-icon="gear">设置</button></li>
+        <li><a href="#eight" data-icon="arrow-r">下一关</a></li>
+      </ul>
+    </div><!-- navbar -->
+  </div><!-- header -->
+  <div data-role="content">
+    <div class="ui-grid-c">
+      <div class="ui-block-a">
+        <button id="btn07" data-inline="true" style="width: 100%;">学习</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn07_0" data-inline="true" style="width: 100%;">巩固</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn07_1" data-inline="true" style="width: 100%;">整体认读</button>
+      </div>
+      <div class="ui-block-d">
+        <button id="btn07__0" data-inline="true" style="width: 100%;">比一比</button>
+      </div>
+    </div><!-- ui-grid-c -->
+    <div class="ui-grid-b">
+      <div class="ui-block-a">
+        <button id="btn07_2" data-inline="true" style="width: 100%;">两拼音节</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn07_3" data-inline="true" style="width: 100%;">三拼三拼</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn07_9" data-inline="true" style="width: 100%;">复习</button>
+      </div>
+    </div><!-- ui-grid-b -->
+    <div style="font-family: helvetica; font-size: 100px; text-align: center;"><p id="par07"></p></div>
+  </div><!-- content -->
+</div><!-- page -->
+
+<div data-role="page" id="eight">
+  <div data-role="header">
+    <h1>第八关 y w</h1>
+    <button data-role="button"class="ui-btn-right"><span class="ui-li-count" style="position: relative; right: 0em;"></span></button>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#seven" data-icon="arrow-l">上一关</a></li>
+        <li><a href="#index" data-icon="home">目录</a></li>
+	<li><button class="settings" data-icon="gear">设置</button></li>
+        <li><a href="#nine" data-icon="arrow-r">下一关</a></li>
+      </ul>
+    </div><!-- navbar -->
+  </div><!-- header -->
+  <div data-role="content">
+    <div class="ui-grid-b">
+      <div class="ui-block-a">
+        <button id="btn08" data-inline="true" style="width: 100%;">学习</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn08_0" data-inline="true" style="width: 100%;">巩固</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn08_1" data-inline="true" style="width: 100%;">整体认读</button>
+      </div>
+    </div><!-- ui-grid-b -->
+    <div class="ui-grid-a">
+      <div class="ui-block-a">
+        <button id="btn08_2" data-inline="true" style="width: 100%;">两拼音节</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn08_9" data-inline="true" style="width: 100%;">复习</button>
+      </div>
+    </div><!-- ui-grid-a -->
+    <p id="par08" style="font-family: helvetica; font-size: 100px; text-align: center; margin: 0px;"></p>
+  </div><!-- content -->
+</div><!-- page -->
+
+<div data-role="page" id="nine">
+  <div data-role="header">
+    <h1>第九关 ai ei ui</h1>
+    <button data-role="button"class="ui-btn-right"><span class="ui-li-count" style="position: relative; right: 0em;"></span></button>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#eight" data-icon="arrow-l">上一关</a></li>
+        <li><a href="#index" data-icon="home">目录</a></li>
+	<li><button class="settings" data-icon="gear">设置</button></li>
+        <li><a href="#ten" data-icon="arrow-r">下一关</a></li>
+      </ul>
+    </div><!-- navbar -->
+  </div><!-- header -->
+  <div data-role="content">
+    <div class="ui-grid-c">
+      <div class="ui-block-a">
+        <button id="btn09" data-inline="true" style="width: 100%;">学习</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn09_0" data-inline="true" style="width: 100%;">巩固</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn09__0" data-inline="true" style="width: 100%;">带声调</button>
+      </div>
+      <div class="ui-block-d">
+        <button id="btn09_1" data-inline="true" style="width: 100%;">比一比</button>
+      </div>
+    </div><!-- ui-grid-c -->
+    <div class="ui-grid-b">
+      <div class="ui-block-a">
+        <button id="btn09_2" data-inline="true" style="width: 100%;">两拼音节</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn09_3" data-inline="true" style="width: 100%;">三拼音节</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn09_9" data-inline="true" style="width: 100%;">复习</button>
+      </div>
+    </div><!-- ui-grid-b -->
+    <p id="par09" style="font-family: helvetica; font-size: 100px; text-align: center; margin: 0px;"></p>
+  </div><!-- content -->
+</div><!-- page -->
+
+<div data-role="page" id="ten">
+  <div data-role="header">
+    <h1>第十关 ao ou iu</h1>
+    <button data-role="button"class="ui-btn-right"><span class="ui-li-count" style="position: relative; right: 0em;"></span></button>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#nine" data-icon="arrow-l">上一关</a></li>
+        <li><a href="#index" data-icon="home">目录</a></li>
+	<li><button class="settings" data-icon="gear">设置</button></li>
+        <li><a href="#eleven" data-icon="arrow-r">下一关</a></li>
+      </ul>
+    </div><!-- navbar -->
+  </div><!-- header -->
+  <div data-role="content">
+    <div class="ui-grid-c">
+      <div class="ui-block-a">
+        <button id="btn10" data-inline="true" style="width: 100%;">学习</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn10_0" data-inline="true" style="width: 100%;">巩固</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn10__0" data-inline="true" style="width: 100%;">带声调</button>
+      </div>
+      <div class="ui-block-d">
+        <button id="btn10_1" data-inline="true" style="width: 100%;">比一比</button>
+      </div>
+    </div><!-- ui-grid-c -->
+    <div class="ui-grid-b">
+      <div class="ui-block-a">
+        <button id="btn10_2" data-inline="true" style="width: 100%;">两拼音节</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn10_3" data-inline="true" style="width: 100%;">三拼音节</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn10_9" data-inline="true" style="width: 100%;">复习</button>
+      </div>
+    </div><!-- ui-grid-b -->
+    <p id="par10" style="font-family: helvetica; font-size: 100px; text-align: center; margin: 0px;"></p>
+  </div><!-- content -->
+</div><!-- page -->
+
+<div data-role="page" id="eleven">
+  <div data-role="header">
+    <h1>十一关 ie üe er</h1>
+    <button data-role="button"class="ui-btn-right"><span class="ui-li-count" style="position: relative; right: 0em;"></span></button>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#ten" data-icon="arrow-l">上一关</a></li>
+        <li><a href="#index" data-icon="home">目录</a></li>
+	<li><button class="settings" data-icon="gear">设置</button></li>
+        <li><a href="#twelve" data-icon="arrow-r">下一关</a></li>
+      </ul>
+    </div><!-- navbar -->
+  </div><!-- header -->
+  <div data-role="content">
+    <div class="ui-grid-c">
+      <div class="ui-block-a">
+        <button id="btn11" data-inline="true" style="width: 100%;">学习</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn11_0" data-inline="true" style="width: 100%;">巩固</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn11__0" data-inline="true" style="width: 100%;">带声调</button>
+      </div>
+      <div class="ui-block-d">
+        <button id="btn11_1" data-inline="true" style="width: 100%;">比一比</button>
+      </div>
+    </div><!-- ui-grid-c -->
+    <div class="ui-grid-b">
+      <div class="ui-block-a">
+        <button id="btn11_11" data-inline="true" style="width: 100%;">整体认读</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn11_2" data-inline="true" style="width: 100%;">两拼音节</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn11_9" data-inline="true" style="width: 100%;">复习</button>
+      </div>
+    </div><!-- ui-grid-b -->
+    <p id="par11" style="font-family: helvetica; font-size: 100px; text-align: center; margin: 0px;"></p>
+  </div><!-- content -->
+</div><!-- page -->
+
+<div data-role="page" id="twelve">
+  <div data-role="header">
+    <h1>十二关 an en in un ün</h1>
+    <button data-role="button"class="ui-btn-right"><span class="ui-li-count" style="position: relative; right: 0em;"></span></button>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#eleven" data-icon="arrow-l">上一关</a></li>
+        <li><a href="#index" data-icon="home">目录</a></li>
+	<li><button class="settings" data-icon="gear">设置</button></li>
+        <li><a href="#thirteen" data-icon="arrow-r">下一关</a></li>
+      </ul>
+    </div><!-- navbar -->
+  </div><!-- header -->
+  <div data-role="content">
+    <div class="ui-grid-c">
+      <div class="ui-block-a">
+        <button id="btn12" data-inline="true" style="width: 100%;">学习</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn12_0" data-inline="true" style="width: 100%;">巩固</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn12__0" data-inline="true" style="width: 100%;">带声调</button>
+      </div>
+      <div class="ui-block-d">
+        <button id="btn12_1" data-inline="true" style="width: 100%;">比一比</button>
+      </div>
+    </div><!-- ui-grid-c -->
+    <div class="ui-grid-c">
+      <div class="ui-block-a">
+        <button id="btn12_11" data-inline="true" style="width: 100%;">整体认读</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn12_2" data-inline="true" style="width: 100%;">两拼音节</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn12_3" data-inline="true" style="width: 100%;">三拼音节</button>
+      </div>
+      <div class="ui-block-d">
+        <button id="btn12_9" data-inline="true" style="width: 100%;">复习</button>
+      </div>
+    </div><!-- ui-grid-c -->
+    <p id="par12" style="font-family: helvetica; font-size: 100px; text-align: center; margin: 0px;"></p>
+  </div><!-- content -->
+</div><!-- page -->
+
+<div data-role="page" id="thirteen">
+  <div data-role="header">
+    <h1>十三关 ang eng ing ong</h1>
+    <button data-role="button"class="ui-btn-right"><span class="ui-li-count" style="position: relative; right: 0em;"></span></button>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#twelve" data-icon="arrow-l">上一关</a></li>
+        <li><a href="#index" data-icon="home">目录</a></li>
+	<li><button class="settings" data-icon="gear">设置</button></li>
+        <li><a href="#forteen" data-icon="arrow-r">下一关</a></li>
+      </ul>
+    </div><!-- navbar -->
+  </div><!-- header -->
+  <div data-role="content">
+    <div class="ui-grid-c">
+      <div class="ui-block-a">
+        <button id="btn13" data-inline="true" style="width: 100%;">学习</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn13_0" data-inline="true" style="width: 100%;">巩固</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn13__0" data-inline="true" style="width: 100%;">带声调</button>
+      </div>
+      <div class="ui-block-d">
+        <button id="btn13_1" data-inline="true" style="width: 100%;">比一比</button>
+      </div>
+    </div><!-- ui-grid-c -->
+    <div class="ui-grid-c">
+      <div class="ui-block-a">
+        <button id="btn13_11" data-inline="true" style="width: 100%;">整体认读</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn13_2" data-inline="true" style="width: 100%;">两拼音节</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn13_3" data-inline="true" style="width: 100%;">三拼音节</button>
+      </div>
+      <div class="ui-block-d">
+        <button id="btn13_9" data-inline="true" style="width: 100%;">复习</button>
+      </div>
+    </div><!-- ui-grid-c -->
+    <p id="par13" style="font-family: helvetica; font-size: 100px; text-align: center; margin: 0px;"></p>
+  </div><!-- content -->
+</div><!-- page -->
+
+<div data-role="page" id="forteen">
+  <div data-role="header">
+    <h1>十四关 整体认读音节</h1>
+    <button data-role="button"class="ui-btn-right"><span class="ui-li-count" style="position: relative; right: 0em;"></span></button>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#thirteen" data-icon="arrow-l">上一关</a></li>
+        <li><a href="#index" data-icon="home">目录</a></li>
+	<li><button class="settings" data-icon="gear">设置</button></li>
+        <li><a href="#fifteen" data-icon="arrow-r">下一关</a></li>
+      </ul>
+    </div><!-- navbar -->
+  </div><!-- header -->
+  <div data-role="content">
+    <div class="ui-grid-b">
+      <div class="ui-block-a">
+        <button id="btn14" data-inline="true" style="width: 100%;">学习</button>
+      </div>
+      <div class="ui-block-b">
+        <button id="btn14_0" data-inline="true" style="width: 100%;">巩固</button>
+      </div>
+      <div class="ui-block-c">
+        <button id="btn14__0" data-inline="true" style="width: 100%;">带声调</button>
+      </div>
+    </div><!-- ui-grid-b -->
+    <p id="par14" style="font-family: helvetica; font-size: 100px; text-align: center; margin: 0px;"></p>
+  </div><!-- content -->
+</div><!-- page -->
+
+<div data-role="page" id="fifteen">
+  <div data-role="header">
+    <h1>十五关 音节总复习</h1>
+    <button data-role="button"class="ui-btn-right"><span class="ui-li-count" style="position: relative; right: 0em;"></span></button>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#forteen" data-icon="arrow-l">上一关</a></li>
+        <li><a href="#index" data-icon="home">目录</a></li>
+	<li><button class="settings" data-icon="gear">设置</button></li>
+        <li><a href="#" data-icon="arrow-r">没有下一关</a></li>
+      </ul>
+    </div><!-- navbar -->
+  </div><!-- header -->
+  <div data-role="content">
+    <button id="btn15" data-inline="true" style="width: 100%;">所有音节总复习</button>
+    <p id="par15" style="font-family: helvetica; font-size: 100px; text-align: center; margin: 0px;"></p>
+  </div><!-- content -->
+</div><!-- page -->
+</body>
+</html>
